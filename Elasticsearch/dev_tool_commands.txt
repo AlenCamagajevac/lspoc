@@ -1,0 +1,112 @@
+GET _cluster/health?pretty
+
+GET _cat/indices
+
+GET _ilm/policy
+
+GET _template/logstash
+
+DELETE _ilm/policy/messages_policy
+
+DELETE _template/messages_template
+
+DELETE messages-2019-12-07-00
+
+GET messages-2019-12-07-00/_search 
+
+GET messages-2019-12-07-00/_mapping
+
+PUT _ilm/policy/messages_policy   
+{
+  "policy": {                       
+    "phases": {
+      "delete": {
+        "min_age": "1d",           
+        "actions": {
+          "delete": {}              
+        }
+      }
+    }
+  }
+}
+
+PUT _template/messages_template
+{
+  "index_patterns": [
+    "messages-*"
+  ],
+  "settings": {
+    "number_of_shards": 1,
+    "index.lifecycle.name": "messages_policy"
+  },
+  "mappings": {
+    "doc": {
+      "properties": {
+        "MessageText": {
+          "type": "text"
+        },
+        "Username": {
+          "type": "text"
+        },
+        "GatewayId": {
+          "type": "integer"
+        },
+        "SendDateTime": {
+          "type": "date",
+          "format": "strict_date_optional_time||epoch_millis"
+        },
+        "Billing": {
+          "type": "nested",
+          "properties": {
+            "Price": {
+              "type": "float"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+PUT _scripts/message-price-upsert
+{
+  "script": {
+    "source": "def billingData = params.billing;def Ver = params.billing.Ver;if (Ver == null){    throw new IllegalArgumentException(\"Missing Ver\")}def SmsChannelId = params.billing.SmsChannelId;if (SmsChannelId == null){    throw new IllegalArgumentException(\"Missing SmsChannelId\")}if (ctx.op == \"create\") {    ctx._source.Ver = 1;    ctx._source.SmsChannelId = SmsChannelId;}def empty = ctx._source.billing == null;if (empty){    ctx._source.billing = [];    ctx._source.billing.add(billingData);} else {    int indexToRemove = -1;    boolean SmsChannelBillingDataExists = false;    int i = 0;    for (def bData : ctx._source.billing) {        if (bData.SmsChannelId == SmsChannelId) {            SmsChannelBillingDataExists = true;            if (bData.Ver < Ver) {                indexToRemove = i;            }            break;        }        i = i + 1;    }    if (!SmsChannelBillingDataExists || indexToRemove >= 0) {        if (indexToRemove >= 0) {            ctx._source.billing.remove(indexToRemove);        }        ctx._source.billing.add(billingData);    }}ctx",
+    "lang": "painless"
+  }
+}
+
+PUT _scripts/message-log-upsert
+{
+  "script": {
+    "source": "def record = params.message;if (record.Ver == null){    throw new IllegalArgumentException(\"Missing VER column!\")}if (ctx.op == \"create\") {    ctx._source = record;}else if (ctx._source.Ver == null || ctx._source.Ver < record.Ver) {    record.billing = ctx._source.billing;    ctx._source = record;}ctx",
+    "lang": "painless"
+  }
+}
+
+GET _scripts/message-price-upsert
+
+PUT messages-2019-12-07-00/doc/1
+{
+    "MessageText" : "Hello world!",
+    "Username" : "Alen",
+    "GatewayId" : 1,
+    "SendDateTime": "2019-12-01T19:30:00.000"
+}
+
+GET messages-*/_ilm/explain
+
+
+POST messages-2019-12-07-00/doc/2-1/_update
+{
+    "scripted_upsert":true,
+    "script" : {
+        "id": "message-price-upsert", 
+        "params" : {
+            "billing": {
+                "price": 0.25
+            }
+        }
+    },
+    "upsert" : {}
+}

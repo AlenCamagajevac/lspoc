@@ -1,0 +1,29 @@
+# Message log pipeline config
+- pipeline.id: message_log_pipeline
+  path.config: "/usr/share/logstash/pipeline/{common,message-log}/*"
+  pipeline.batch.size: 1000
+  pipeline.batch.delay: 50  
+  path.queue: "/tmp/queue/message-log-queue"
+  queue.type: persisted
+  queue.max_bytes: 1gb
+  queue.drain: true
+
+# Message price pipeline config
+- pipeline.id: message_price_pipeline
+  path.config: "/usr/share/logstash/pipeline/{common,message-price}/*"
+  pipeline.batch.size: 500
+  pipeline.batch.delay: 100 
+  path.queue: "/tmp/queue/message-price-queue"
+  queue.type: persisted
+  queue.max_bytes: 512mb
+  queue.drain: true
+
+# Dead letter pipeline config
+- pipeline.id: dead_letter_pipeline
+  path.config: "/usr/share/logstash/pipeline/{dead-letter}/*"
+  pipeline.batch.size: 10
+  pipeline.batch.delay: 500 
+  path.queue: "/tmp/queue/dead-letter-queue"
+  queue.type: persisted
+  queue.max_bytes: 265mb
+  queue.drain: true

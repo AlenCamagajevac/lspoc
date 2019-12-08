@@ -1,0 +1,4 @@
+/Elasticsearch/logstash/data/*
+/Kafka/data/
+/Kafka/zookeeper
+/Elasticsearch/logstash/queue/*

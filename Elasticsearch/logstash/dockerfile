@@ -1,0 +1,6 @@
+FROM docker.elastic.co/logstash/logstash:6.8.5
+
+RUN bin/logstash-plugin install logstash-filter-jdbc_static
+RUN bin/logstash-plugin install logstash-filter-alter
+RUN bin/logstash-plugin install logstash-filter-mutate
+RUN bin/logstash-plugin install logstash-filter-date

@@ -1,0 +1,13 @@
+{"MessageText": "Hello world!", "Username": "Alen", "GatewayId": 2, "SendDateTime": "2019-12-01T21:16:00.000", "SendDateTime_L": "1575729728087"}
+
+{"MessageText": "Hello world!", "Username": "Alen", "RoutedGatewayId": 2, "SendDateTime": "2019-12-01T21:16:00.000", "SendDateTime_L": "1575729728087"}
+
+{"MessageText": "Hello world!", "Username": "Alen", "GatewayId": 3, "RoutedGatewayId": 1, "SendDateTime": "2019-12-01T21:16:00.000", "SendDateTime_L": "1575729728087"}
+
+{"MessageText": "Hello world!", "Username": "Alen", "GatewayId": 2, "SendDateTime": "2019-12-01T21:16:00.000", "SendDateTime_L": "1575729728087", "MessageType": "20"}
+
+{"MessageText": "Hello world!", "Username": "Alen", "SendDateTime": "2019-12-01T21:16:00.000", "SendDateTime_L": "1575729728087"}
+
+{"MessageText": "Hello world!", "UserId": 3, "SendDateTime": "2019-12-01T21:16:00.000", "SendDateTime_L": "1575729728087", "DatabaseId": 1, "SequenceId": 3, "Ver": 1}
+
+{"Price": 0.25, "SequenceId": 2, "DatabaseId": 1, "SendDateTime_L": "1575729728087", "Ver": 1, "SmsChannelId": 2, "SendDateTime": "2019-12-07T16:20:00.000"}

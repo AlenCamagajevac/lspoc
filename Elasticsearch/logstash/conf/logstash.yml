@@ -1,0 +1,7 @@
+http.host: "0.0.0.0"
+xpack.monitoring.elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+node.name: "node_${LS_NODE_NAME}"
+
+# Can be set in pipelines config for each pipeline
+dead_letter_queue.enable: true
+dead_letter_queue.max_bytes: 2gb
